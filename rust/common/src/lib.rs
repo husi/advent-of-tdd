@@ -2,7 +2,7 @@ use std::fs;
 
 pub fn load_aoc_input(file_name: &str) -> Vec<String> {
     let content = fs::read_to_string(file_name).unwrap();
-    content.split('\n').map(|s| {String::from(s)}).collect()
+    content.split('\n').map(|s| {String::from(s.trim())}).collect()
 
 }
 
