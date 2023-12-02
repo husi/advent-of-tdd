@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 common = {path = "../common"}
+fancy-regex = "0.12.0"
