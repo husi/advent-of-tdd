@@ -1,4 +1,6 @@
 mod game {
+    use std::cmp::max;
+
     #[derive(PartialEq, Debug)]
     pub struct Hand {
         red: u32,
@@ -30,6 +32,10 @@ mod game {
         pub fn validate(&self, red: u32, green: u32, blue: u32) -> bool {
             self.red <= red && self.green <= green && self.blue <= blue
         }
+
+        pub fn power(&self) -> u32 {
+            self.red * self.green * self.blue
+        }
     }
 
     #[derive(PartialEq, Debug)]
@@ -49,6 +55,14 @@ mod game {
 
         pub fn validate(&self, red: u32, green: u32, blue: u32) -> bool {
             self.hands.iter().all(|hand| hand.validate(red, green, blue))
+        }
+
+        pub fn max_hand(&self) -> Hand {
+            self.hands.iter().fold(Hand{red:0, green:0, blue:0},|max_hand,hand| Hand{
+                red: max(max_hand.red, hand.red),
+                green: max(max_hand.green, hand.green),
+                blue: max(max_hand.blue, hand.blue),
+            })
         }
     }
 
@@ -96,6 +110,12 @@ mod game {
             assert!(!game.validate(13,7,3));
         }
 
+        #[test]
+        fn test_game_max_hand() {
+            let game = Game::parse("Game 2: 2 blue, 4 red, 7 green; 3 blue, 2 green; 3 green, 14 red, 1 blue");
+            assert_eq!(game.max_hand(), Hand{red:14, green:7, blue:3})
+        }
+
     }
 }
 
@@ -127,6 +147,27 @@ mod exercise1 {
     }
 }
 
+mod exercise2 {
+    use common::load_aoc_input;
+    use crate::game::Game;
+
+    pub fn compute(input_file: &str) -> u32 {
+        let input = load_aoc_input(input_file);
+        input.iter()
+            .map(|game| Game::parse(game).max_hand().power())
+            .sum()
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        #[test]
+        fn test_compute() {
+            assert_eq!(compute("test_data/e1.txt"), 2286);
+        }
+    }
+}
 fn main() {
     println!("{}",exercise1::compute("test_data/puzzle1.txt"));
+    println!("{}",exercise2::compute("test_data/puzzle1.txt"));
 }
